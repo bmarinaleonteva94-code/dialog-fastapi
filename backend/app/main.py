@@ -1,8 +1,19 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.config import settings
 
-app = FastAPI(title=settings.app_name)
+from contextlib import asynccontextmanager
+
+from app.config import settings
+from app.database import init_db
+from app import auth
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    init_db()
+    yield
+
+
+app = FastAPI(title=settings.app_name, lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -12,6 +23,7 @@ app.add_middleware(
     allow_headers=["Authorization", "Content-Type"]
 )
 
+app.include_router(auth.router)
 
 @app.get('/health')
 def health() -> dict[str, str]:
