@@ -1,6 +1,6 @@
 const API_URL = 'http://localhost:8000';
 
-async function api(path, options={}, redirectOnUnathorization = True){
+async function api(path, options={}, redirectOnUnathorization = true){
     const headers = new Headers(options.headers || {});
     if(options.body) headers.set("Content-Type", "application/json");
     const response = await fetch(`${API_URL}${path}`, {
