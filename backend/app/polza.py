@@ -34,21 +34,36 @@ class PolzaClient:
                 models.append({"id":model_id, "name" :name})
         return sorted(models, key=lambda model: model["name"].lower())
 
-    async def complete(self, model_id: str, messages: list[dict[str, str]]) -> str:
+    # async def complete(self, model_id: str, messages: list[dict[str, str]]) -> str:
+    #     if not settings.polza_api_key:
+    #         raise PolzaError("На сервере не настроен POLZA_API_KEY")
+    #     response = await self._request(
+    #         "POST",
+    #         "/chat/completions",
+    #         json={"model": model_id,"messages": messages}
+    #     )
+    #     payload = self._json(response)
+    #     try:
+    #         content = self.payload["choices"][0]["message"]["content"]
+    #     except(KeyError,IndexError,TypeError) as exc:
+    #         raise PolzaError("Polza.ai вернул ответ низвестного формата") from exc
+    #     if not isinstance(content,str) or not content.strip():
+    #         raise PolzaError("Модель вернула пустой ответ")
+    async def complete(self, model_id: str, messages: list[dict[str,str]]) -> str:
         if not settings.polza_api_key:
             raise PolzaError("На сервере не настроен POLZA_API_KEY")
         response = await self._request(
-            "POST",
-            "/chat/completions",
-            json={"model": model_id,"messages": messages}
+             "POST",
+             "/chat/completions",
+             json={"model": model_id,"messages": messages}
         )
-        payload = self._json(response)
         try:
-            content = self.payload["choices"][0]["message"]["content"]
+            content = self._json(response)["choices"][0]["message"]["content"]
         except(KeyError,IndexError,TypeError) as exc:
             raise PolzaError("Polza.ai вернул ответ низвестного формата") from exc
         if not isinstance(content,str) or not content.strip():
             raise PolzaError("Модель вернула пустой ответ")
+        return content
 
     async def _request(self, method: str, path: str, **kwargs: Any):
         try:
