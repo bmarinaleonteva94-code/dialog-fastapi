@@ -89,13 +89,15 @@ async def list_models() -> list[dict[str,str]]:
             status_code=status.HTTP_502_BAD_GATEWAY,
             detail=str(exc)
         )
+    
 @router.get("/chats", response_model=list[ChatResponse])
 async def list_chats(user: CurrentUser, db: DbSession):
     return list(
-        db.scalar(
+        db.scalars(
             select(Chat).where(Chat.user_id == user.id).order_by(Chat.updated_at.desc())
         )
     )
+
 @router.post("/chats", response_model=ChatResponse,
              status_code=status.HTTP_201_CREATED)
 def create_chat(payload: CreateChatRequest, user: CurrentUser,
@@ -104,6 +106,7 @@ def create_chat(payload: CreateChatRequest, user: CurrentUser,
     db.add(chat)
     db.commit()
     return chat
+
 @router.get("/chats/{chat_id}", response_model=ChatDetail)
 def get_chat(chat_id: int, user: CurrentUser, db: DbSession):
     chat = required_chat(chat_id,user.id,db)

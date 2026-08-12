@@ -50,14 +50,14 @@ function setEmptyState(isEmpty){
 
 function renderChats() {
     const query = elements.chatSearch.value.trim().toLowerCase();
-    const visibleChat = state.chats.filter(chat => chat.title.toLowerCase().includes(query))
+    const visibleChats = state.chats.filter(chat => chat.title.toLowerCase().includes(query))
 
     elements.chatHistory.replaceChildren();
     elements.emptyHistory.classList.toggle("hidden", visibleChats.length > 0);
 
     visibleChats.forEach(chat => {
         const button = document.createElement("button");
-        const active  =chat.id === state.currentChatId;
+        const active = chat.id === state.currentChatId;
         button.type = "button";
         button.className = active
             ? "flex w-full items-center gap-2 rounded-lg bg-white px-3 py-2.5 text-left font-medium text-ink shadow-sm"
@@ -83,7 +83,7 @@ function renderModels() {
     if(!state.models.length){
         const option = document.createElement("option");
         option.textContent = "Модели недоступны"
-        elements.modelSelect.appendChild("option");
+        elements.modelSelect.appendChild(option);
         elements.modelSelect.disabled = true;
         updateComposer();
         return;
@@ -93,7 +93,7 @@ function renderModels() {
         const option = document.createElement("option");
         option.value = model.id;
         option.textContent = model.name || model.id
-        elements.modelSelect.appendChild("option");
+        elements.modelSelect.appendChild(option);
     });
 
     elements.modelSelect.disabled  = false;
@@ -117,7 +117,7 @@ async function loadChat(chatId) {
 
 function createMessageElement(message) {
     const isUser = message.role === "user";
-    const article = document.createAttribute("article");
+    const article = document.createElement("article");
     article.className = isUser
         ? "flex items-center justify-end"
         : "flex items-start gap-3"
@@ -132,10 +132,10 @@ function createMessageElement(message) {
     return article
 }
 
-async function renderMessages(message) {
+async function renderMessages(messages) {
     elements.messages.replaceChildren(...messages.map(createMessageElement))
 
-    scrollToBottom()
+    // scrollToBottom()
 }
 
 function startNewChat(){
@@ -190,7 +190,7 @@ async function sendMessage(content){
         elements.messages.appendChild(
             createMessageElement({role: "user", content})
         );
-        scrollToBottom()
+        // scrollToBottom()
 
         const result = await api(`/api/chats/${state.currentChatId}/messages`, {
             body: JSON.stringify({
@@ -204,7 +204,7 @@ async function sendMessage(content){
         );
         elements.chatTitle.textContent = result.chat.title;
         await refreshChats();
-        scrollToBottom();
+        // scrollToBottom();
     }
 
     catch(e){
