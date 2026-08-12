@@ -58,7 +58,9 @@ class SendMessageRequest(BaseModel):
 
         if not value:
             raise ValueError( "сообщение не может быть пустым")
+        return value
 
+    
 class SendMessageResponse(BaseModel):
     chat: ChatResponse
     assistant_message: MessageResponse

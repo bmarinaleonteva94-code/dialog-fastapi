@@ -6,10 +6,12 @@ from contextlib import asynccontextmanager
 from app.config import settings
 from app.database import init_db
 from app import auth
+from fastapi.concurrency import run_in_threadpool
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
-    init_db()
+    # init_db()
+    await run_in_threadpool(init_db)
     yield
 
 
