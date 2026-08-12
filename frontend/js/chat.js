@@ -193,6 +193,7 @@ async function sendMessage(content){
         // scrollToBottom()
 
         const result = await api(`/api/chats/${state.currentChatId}/messages`, {
+            method:"POST",
             body: JSON.stringify({
                 content,
                 model_id: elements.modelSelect.value

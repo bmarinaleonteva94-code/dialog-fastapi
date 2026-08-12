@@ -51,7 +51,7 @@ class PolzaClient:
             raise PolzaError("Polza.ai вернул ответ низвестного формата") from exc
         if not isinstance(content,str) or not content.strip():
             raise PolzaError("Модель вернула пустой ответ")
-        return content
+        return content.strip()
 
     async def _request(self, method: str, path: str, **kwargs: Any) -> httpx.Response:
         try:
